@@ -1,180 +1,689 @@
-body {
-  font-family: Arial, sans-serif;
-  background-color: white;
-  color: black;
-  transition: background 0.3s, color 0.3s;
-}
-.container {
-  display: flex;
-  gap: 20px;
-}
-.left-column {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>College Kids</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <button class="theme-button" id="toggle-theme">Theme</button>
 
-#info {
-  padding: 10px;
-  border: 1px solid #ddd;
-  width: 100%;
-  height: 200px;
-  overflow-y: auto;
-}
+    <h1>Students To Where</h1>
 
-#map {
-  height: 600px;
-  width: 101%;
-  transition: filter 0.3s;
-}
+    <div class="container">
+      <div class="left-column">
+        <div id="info">
+          <h3>Click a state to see students</h3>
+        </div>
+        <div id="map"></div>
+      </div>
 
-.right-column {
-  width: 50%;
-  padding: 10px;
-  border: 1px solid #ddd;
-}
-body.dark-mode {
-  background-color: #222;
-  color: #fff;
-}
+      <div class="right-column">
+        <h3>Type To Search Students or Colleges</h3>
+        <div>
+          <div class="search">
+            <input
+              type="text"
+              class="searchTerm"
+              placeholder="Search..."
+              onchange
+              onpropertychange
+              onkeyuponpaste
+              oninput="searchUpdate(this.value)"
+            />
+          </div>
+        </div>
+        <div id="name-buttons" class="button-group"></div>
+          <p><mark><a href="https://docs.google.com/spreadsheets/d/1y4iTyeaZi0kXrFdXFSMkZUozOb0PSnYDZcmQNojm45g/edit?usp=sharing">Click Here for Raw Data</a></mark></p>
+      </div>
+    </div>
 
-.dark-mode .leaflet-container {
-  filter: invert(90%) hue-rotate(180deg);
-}
-.theme-button {
-  padding: 0.6em 2em;
-  border: none;
-  outline: none;
-  color: rgb(255, 255, 255);
-  background: #111;
-  cursor: pointer;
-  position: relative;
-  z-index: 0;
-  border-radius: 10px;
-  user-select: none;
-  -webkit-user-select: none;
-  touch-action: manipulation;
-}
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+      var map = L.map("map").setView([37.8, -96], 4);
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: "&copy; OpenStreetMap contributors",
+      }).addTo(map);
 
-.theme-button:before {
-  content: "";
-  background: linear-gradient(
-    45deg,
-    #ff0000,
-    #ff7300,
-    #fffb00,
-    #48ff00,
-    #00ffd5,
-    #002bff,
-    #7a00ff,
-    #ff00c8,
-    #ff0000
-  );
-  position: absolute;
-  top: -2px;
-  left: -2px;
-  background-size: 400%;
-  z-index: -1;
-  filter: blur(5px);
-  -webkit-filter: blur(5px);
-  width: calc(100% + 4px);
-  height: calc(100% + 4px);
-  animation: button 20s linear infinite;
-  transition: opacity 0.3s ease-in-out;
-  border-radius: 10px;
-}
+      //some dots
+      var colleges = {
+        Michigan: [
+          {
+            name: "University of Michigan",
+            location: [42.278, -83.738],
+            students: [
+              "Brandon Wivietsky",
+              "Hannah Bailey",
+              "Aidan Katz",
+              "Riley Lenson",
+              "Caroline Goldberg",
+              "Sammy Mayer",
+            ],
+          },
+        ],
+        Missouri: [
+          {
+            name: "Washington University in St. Louis",
+            location: [38.648, -90.31],
+            students: ["Tyler Osit"],
+          },
+        ],
+        "New York": [
+          {
+            name: "Cornell University",
+            location: [42.453, -76.473],
+            students: [
+              "Brooke Zheng",
+              "Danielle Chen",
+              "Zachary Jonah Davidson",
+              "Sarah Zwerling",
+              "Mia Streiner",
+              "Jessica Zucker",
+            ],
+          },
+          {
+            name: "Syracuse University",
+            location: [43.037, -76.134],
+            students: [
+              "Jake Halprerin",
+              "Max Cohen",
+              "Max Shukat",
+              "Allison Mandell",
+              "Sofia Levy",
+              "Isabella Santos",
+              "Ella Meyer",
+              "Dylan Rosenbaum",
+            ],
+          },
+          {
+            name: "New York University",
+            location: [40.729, -73.996],
+            students: ["Shiloh Ye"],
+          },
+          {
+            name: "The Cooper Union",
+            location: [40.729, -73.99],
+            students: ["Michael Chen"],
+          },
+          {
+            name: "Rochester Institute of Technology",
+            location: [43.084, -77.674],
+            students: ["Ayaan Ahmed", "Robby Adler"],
+          },
+          {
+            name: "St. John's University",
+            location: [40.723388, -73.7978003],
+            students: ["Ava Voynovich"],
+          },
+          {
+            name: "New York Institute of Technology",
+            location: [40.7518581, -73.877799],
+            students: ["Jaggi Sareen"],
+          },
+          {
+            name: "Marist College",
+            location: [41.7231092, -73.9370625],
+            students: ["Michael Wertheim"],
+          },
+          {
+            name: "SUNY New Paltz",
+            location: [41.738566, -74.0877719],
+            students: ["Alex Krol"],
+          },
+          {
+            name: "Parsons School of Design",
+            location: [40.7351337, -73.9970586],
+            students: ["Liz Li"],
+          },
+          {
+            name: "Columbia University",
+            location: [40.8082222, -73.9619722],
+            students: ["Dana Wang"],
+          },
+          {
+            name: "SUNY Cortland",
+            location: [42.5574784, -76.2207711],
+            students: ["Hailey Gildea"],
+          },
+        ],
+        "North Carolina": [
+          {
+            name: "High Point University",
+            location: [35.9721753, -79.9988298],
+            students: ["Connor Stam"],
+          },
+          {
+            name: "Davidson College",
+            location: [35.5015571, -80.8448997],
+            students: ["Yereem Kim"],
+          },
+        ],
+        "Rhode Island": [
+          {
+            name: "Rhode Island School of Design",
+            location: [41.8233883, -71.4075349],
+            students: ["Birch Lee"],
+          },
+        ],
+        Maryland: [
+          {
+            name: "George Washington University",
+            location: [38.8996157, -77.0494741],
+            students: ["Anna Falcone", "Sasha Berman"],
+          },
+        ],
+        Connecticut: [
+          {
+            name: "Western Connecticut State University",
+            location: [41.3973598, -73.4793796],
+            students: ["Vienna Brocco"],
+          },
+        ],
+        Maine: [
+          {
+            name: "Bates College",
+            location: [44.1057254, -70.2047614],
+            students: ["Isabella Kohl"],
+          },
+        ],
+        "South Carolina": [
+          {
+            name: "Clemson University",
+            location: [34.674997, -82.8431933],
+            students: ["Kapri Leonardi"],
+          },
+        ],
+        Pennsylvania: [
+          {
+            name: "Muhlenberg College",
+            location: [40.5981973, -75.5106825],
+            students: ["Spencer Cymbler"],
+          },
+          {
+            name: "Villanova",
+            location: [40.0368967, -75.3451534],
+            students: ["Ethan Solop"],
+          },
+          {
+            name: "Holy Family University",
+            location: [40.0609275, -74.9899068],
+            students: ["Daniel Kaminsky"],
+          },
+          {
+            name: "Lehigh University",
+            location: [40.605392, -75.3798612],
+            students: ["Nathaniel Rubin", "Eliza Bloom", "Chloe Kaplan"],
+          },
+          {
+            name: "Penn State University",
+            location: [40.7982173, -77.8624833],
+            students: ["Jacob Eckfeldt"],
+          },
+          {
+            name: "University of Pennsylvania",
+            location: [39.9515054, -75.193591],
+            students: ["Audrey Tseng"],
+          },
+        ],
+        Massachusetts: [
+          {
+            name: "Boston University",
+            location: [42.35, -71.105],
+            students: [
+              "Uma Khurrum",
+              "Denise Ramirez",
+              "Charlotte Kwon",
+              "Zach Goldman",
+              "Izzy Carlese",
+            ],
+          },
+          {
+            name: "Bentley University",
+            location: [42.387, -71.221],
+            students: ["Asher Friess"],
+          },
+          {
+            name: "Northeastern University",
+            location: [42.34, -71.089],
+            students: ["Robert Krol"],
+          },
+          {
+            name: "Babson College",
+            location: [42.297, -71.263],
+            students: ["Katelyn Wang"],
+          },
+        ],
+        Georgia: [
+          {
+            name: "Emory University",
+            location: [33.792, -84.324],
+            students: ["Mitchell Berger"],
+          },
+          {
+            name: "University of Georgia",
+            location: [33.956, -83.377],
+            students: ["Layla Jaffe"],
+          },
+        ],
+        Louisiana: [
+          {
+            name: "Tulane University",
+            location: [29.94, -90.12],
+            students: [
+              "Ben Oralevich",
+              "Skylar Spier",
+              "Paige Donchey",
+              "Devin Sakaria",
+              "Ava Ramsey",
+              "Maddie Wolin",
+            ],
+          },
+        ],
+        Wisconsin: [
+          {
+            name: "University of Wisconsin",
+            location: [43.076, -89.412],
+            students: ["Jake Levine", "Zach Pinz"],
+          },
+        ],
+        Colorado: [
+          {
+            name: "University of Colorado Boulder",
+            location: [40.007354, -105.268562],
+            students: ["Jesse Goldsmith"],
+          },
+        ],
+        Illinois: [
+          {
+            name: "Northwestern University",
+            location: [42.0548546, -87.7009674],
+            students: ["Esha Chandra"],
+          },
+        ],
+        Virginia: [
+          {
+            name: "University of Virginia",
+            location: [38.033, -78.507],
+            students: ["Josh Mazarin"],
+          },
+        ],
+        Indiana: [
+          {
+            name: "Indiana University",
+            location: [39.166, -86.526],
+            students: ["Hazel Kaufman"],
+          },
+        ],
+        Florida: [
+          {
+            name: "Florida Atlantic University",
+            location: [26.373, -80.101],
+            students: ["Meeka Rozenzvig"],
+          },
+          {
+            name: "University of Miami",
+            location: [25.719, -80.278],
+            students: ["Kayla Katayev"],
+          },
+        ],
+        Ohio: [
+          {
+            name: "The Ohio State University",
+            location: [40.003, -83.016],
+            students: ["Jack Becker", "Joe Goldberg"],
+          },
+        ],
+        California: [
+          {
+            name: "Lebron House",
+            location: [34.0974078,-118.4286952],
+            students: ["Lebron James"],
+          },
+        ],
+      };
 
-@keyframes button {
-  0% {
-    background-position: 0 0;
-  }
-  50% {
-    background-position: 400% 0;
-  }
-  100% {
-    background-position: 0 0;
-  }
-}
+      var kids = [
+        "Connor Stam",
+        "Spencer Cymbler",
+        "Ava Voynovich",
+        "Ayaan Ahmed",
+        "Ethan Solop",
+        "Daniel Kaminsky",
+        "Maddie Wolin",
+        "Ava Ramsey",
+        "Devin Sakaria",
+        "Paige Donchey",
+        "Skylar Spier",
+        "Ben Oralevich",
+        "Layla Jaffe",
+        "Jaggi Sareen",
+        "Michael Wertheim",
+        "Mitchell Berger",
+        "Shiloh Ye",
+        "Michael Chen",
+        "Birch Lee",
+        "Izzy Carlese",
+        "Zach Goldman",
+        "Robert Krol",
+        "Jessica Zucker",
+        "Charlotte Kwon",
+        "Mia Streiner",
+        "Sarah Zwerling",
+        "Zachary Jonah Davidson",
+        "Danielle Chen",
+        "Denise Ramirez",
+        "Uma Khurrum",
+        "Brooke Zheng",
+        "Tyler Osit",
+        "Vienna Brocco",
+        "Kayla Katayev",
+        "Chloe Kaplan",
+        "Eliza Bloom",
+        "Zach Pinz",
+        "Asher Friess",
+        "Nathaniel Rubin",
+        "Isabella Kohl",
+        "Yereem Kim",
+        "Hailey Gildea",
+        "Anna Falcone",
+        "Liz Li",
+        "Sasha Berman",
+        "Alex Krol",
+        "Katelyn Wang",
+        "Esha Chandra",
+        "Dylan Rosenbaum",
+        "Ella Meyer",
+        "Isabella Santos",
+        "Sofia Levy",
+        "Allison Mandell",
+        "Max Shukat",
+        "Max Cohen",
+        "Jake Halprerin",
+        "Dana Wang",
+        "Jacob Eckfeldt",
+        "Audrey Tseng",
+        "Robby Adler",
+        "Kapri Leonardi",
+        "Meeka Rozenzvig",
+        "Sammy Mayer",
+        "Caroline Goldberg",
+        "Riley Lenson",
+        "Jack Becker",
+        "Hazel Kaufman",
+        "Aidan Katz",
+        "Hannah Bailey",
+        "Joe Goldberg",
+        "Jesse Goldsmith",
+        "Brandon Wivietsky",
+        "Zach Pinz",
+        "Jake Levine",
+      ];
+      var majors = [
+        "Criminal Justice",
+        "Business/Lacrosse",
+        "Biomedical Sciences/Soccer",
+        "Computing and Information Technologies",
+        "Undecided/Tennis",
+        "Physical Therapy/Baseball",
+        "Marketing and Digital Media Practices",
+        "Psychology",
+        "Biology/Pre Med",
+        "Psychology",
+        "Undecided",
+        "Architecture",
+        "Psychology",
+        "Biology",
+        "Finance",
+        "Finance",
+        "Liberal Studies/Psychology",
+        "Chemical Engineering",
+        "Fine Arts",
+        "Nutritional Sciences/Figure Skating",
+        "Biology",
+        "Computer Science/Biology",
+        "Psychology",
+        "Chemistry",
+        "Human Development",
+        "Human Development",
+        "Engineering/Track and Field",
+        "Human Development",
+        "Political Science and Philosophy",
+        "Journalism",
+        "Electrical and Computer Engineering",
+        "Finance",
+        "Criminal Justice: Homeland Security",
+        "Business Management",
+        "Psychology",
+        "Philosophy",
+        "Engineering",
+        "Economics/Finance",
+        "Economics",
+        "English",
+        "Philosophy",
+        "Criminology",
+        "History",
+        "Communication Design",
+        "Political Science",
+        "Biology/Tennis",
+        "Accounting",
+        "Engineering",
+        "Political Science",
+        "Political Science",
+        "Marketing Management",
+        "Public Relations",
+        "Communication Sciences and Disorders",
+        "Bandier Program",
+        "Journalism",
+        "Real Estate",
+        "Art History",
+        "Undecided",
+        "Mechanical Engineering and Applied Mechanics",
+        "Business",
+        "Communications",
+        "Nursing",
+        "Communications and Media",
+        "Economics",
+        "Psychology",
+        "Sport Industry",
+        "Early Childhood Education",
+        "Economics",
+        "Art and Design",
+        "Accounting",
+        "Strategic Communications",
+        "Environmental Sciences",
+        "Personal Finance",
+        "Personal Finance",
+      ];
 
-.theme-button:after {
-  z-index: -1;
-  content: "";
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  background: #222;
-  left: 0;
-  top: 0;
-  border-radius: 10px;
-}
-.theme-button:hover {
-  box-shadow: rgba(44, 187, 99, 0.35) 0 -25px 18px -14px inset,
-    rgba(44, 187, 99, 0.25) 0 1px 2px, rgba(44, 187, 99, 0.25) 0 2px 4px,
-    rgba(44, 187, 99, 0.25) 0 4px 8px, rgba(44, 187, 99, 0.25) 0 8px 16px,
-    rgba(44, 187, 99, 0.25) 0 16px 32px;
-  transform: scale(1.05) rotate(-1deg);
-}
-.dark-mode button {
-  background-color: darkgray;
-  border: 1px solid white;
-}
-.search {
-  width: 100%;
-  position: relative;
-  display: flex;
-}
+      var collegeNames = [
+        "High Point University",
+        "Muhlenberg College",
+        "St. John's University",
+        "Rochester Institute of Technology",
+        "Villanova",
+        "Holy Family University",
+        "Tulane University",
+        "Tulane University",
+        "Tulane University",
+        "Tulane University",
+        "Tulane University",
+        "Tulane University",
+        "University of Georgia",
+        "New York Institute of Technology",
+        "Marist College",
+        "Emory University",
+        "New York University",
+        "The Cooper Union",
+        "Rhode Island School of Design",
+        "Boston University",
+        "Boston University",
+        "Northeastern University",
+        "Cornell University",
+        "Boston University",
+        "Cornell University",
+        "Cornell University",
+        "Cornell University",
+        "Cornell University",
+        "Boston University",
+        "Boston University",
+        "Cornell University",
+        "Washington University in St. Louis",
+        "Western Connecticut State University",
+        "University of Miami",
+        "Lehigh University",
+        "Lehigh University",
+        "University of Virginia",
+        "Bentley University",
+        "Lehigh University",
+        "Bates College",
+        "Davidson College",
+        "SUNY Cortland",
+        "George Washington University",
+        "Parsons School of Design",
+        "George Washington University",
+        "SUNY New Paltz",
+        "Babson College",
+        "Northwestern University",
+        "Syracuse University",
+        "Syracuse University",
+        "Syracuse University",
+        "Syracuse University",
+        "Syracuse University",
+        "Syracuse University",
+        "Syracuse University",
+        "Syracuse University",
+        "Columbia University",
+        "Penn State University",
+        "University of Pennsylvania",
+        "Rochester Institute of Technology",
+        "Clemson University",
+        "Florida Atlantic University",
+        "University of Michigan",
+        "University of Michigan",
+        "University of Michigan",
+        "The Ohio State University",
+        "Indiana University",
+        "University of Michigan",
+        "University of Michigan",
+        "The Ohio State University",
+        "University of Colorado Boulder",
+        "University of Michigan",
+        "University of Wisconsin",
+        "University of Wisconsin",
+      ];
 
-.searchTerm {
-  width: 100%;
-  border: 3px solid #00b4cc;
-  padding: 5px;
-  height: 20px;
-  border-radius: 5px 5px 5px 5px;
-  outline: none;
-  color: #9dbfaf;
-}
+      var markers = {};
 
-.searchTerm:focus {
-  color: #00b4cc;
-}
+      Object.values(colleges)
+        .flat()
+        .forEach((college) => {
+          const marker = L.marker(college.location, {
+            icon: L.divIcon({
+              className: "red-dot",
+              html: `<span style="opacity: .7; display: inline-block; transform: scale(${
+                1 + college.students.length / 10
+              })">🔴</span>`,
+              iconSize: [10, 10],
+            }),
+          })
 
-.button-group {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
+            .addTo(map)
+            .bindPopup(
+              // `<b>${college.name}</b><br>${college.students.join("<br>")}`
+              `<b>${college.name}</b><br>${college.students
+                .map((student) => {
+                  const index = kids.indexOf(student);
+                  return index !== -1
+                    ? `${student} (<i>${majors[index]}</i>)`
+                    : student;
+                })
+                .join("<br>")}`
+            );
+          markers[college.name] = marker;
+        });
 
-.button-group .button {
-  background-color: #00b4cc;
-  border-radius: 100px;
-  box-shadow: rgba(44, 187, 99, 0.2) 0 -25px 18px -14px inset,
-    rgba(44, 187, 99, 0.15) 0 1px 2px, rgba(44, 187, 99, 0.15) 0 2px 4px,
-    rgba(44, 187, 99, 0.15) 0 4px 8px, rgba(44, 187, 99, 0.15) 0 8px 16px,
-    rgba(44, 187, 99, 0.15) 0 16px 32px;
-  color: white;
-  cursor: pointer;
-  display: inline-block;
-  font-family: CerebriSans-Regular, -apple-system, system-ui, Roboto, sans-serif;
-  padding: 7px 20px;
-  text-align: center;
-  text-decoration: none;
-  transition: all 250ms;
-  border: 0;
-  font-size: 16px;
-  user-select: none;
-  -webkit-user-select: none;
-  touch-action: manipulation;
-  margin: 5px 0;
-}
+      fetch(
+        "https://raw.githubusercontent.com/PublicaMundi/MappingAPI/master/data/geojson/us-states.json"
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          L.geoJSON(data, {
+            style: {
+              color: "#555",
+              weight: 1,
+              fillOpacity: 0.1,
+            },
+            onEachFeature: function (feature, layer) {
+              layer.on("click", function () {
+                let state = feature.properties.name;
+                let students = (colleges[state] || [])
+                  .map(
+                    (college) =>
+                      `<li><b>${college.name}</b> - ${college.students.join(
+                        ", "
+                      )}</li><br>`
+                  )
+                  .join("");
+                document.getElementById(
+                  "info"
+                ).innerHTML = `<h3>${state}</h3><ul>${
+                  students || "<li>No data</li>"
+                }</ul>`;
+              });
+            },
+          }).addTo(map);
+        });
 
-.button-group .button:not(:last-child) {
-  border-bottom: 15px;
-}
+      document
+        .getElementById("toggle-theme")
+        .addEventListener("click", function () {
+          document.body.classList.toggle("dark-mode");
 
-.button-group .button:hover {
-  box-shadow: rgba(44, 187, 99, 0.35) 0 -25px 18px -14px inset,
-    rgba(44, 187, 99, 0.25) 0 1px 2px, rgba(44, 187, 99, 0.25) 0 2px 4px,
-    rgba(44, 187, 99, 0.25) 0 4px 8px, rgba(44, 187, 99, 0.25) 0 8px 16px,
-    rgba(44, 187, 99, 0.25) 0 16px 32px;
-  transform: scale(1.05) rotate(-1deg);
-}
+          // Save preference in local storage
+          if (document.body.classList.contains("dark-mode")) {
+            localStorage.setItem("theme", "dark");
+          } else {
+            localStorage.setItem("theme", "light");
+          }
+        });
+      // Load user preference
+      if (localStorage.getItem("theme") === "dark") {
+        document.body.classList.add("dark-mode");
+      }
+      function searchUpdate(text) {
+        const names = kids.filter((item) =>
+          item.toLowerCase().includes(text.toLowerCase())
+        );
+        const collegeMatches = collegeNames.filter((item) =>
+          item.toLowerCase().includes(text.toLowerCase())
+        );
+        document.getElementById("name-buttons").innerHTML = "";
+        if (text !== "") {
+          names.forEach((item) => {
+            var btn = document.createElement("button");
+            btn.className = "button";
+            btn.innerHTML = item;
+            btn.addEventListener("click", function () {
+              markers[collegeNames[kids.indexOf(item)]].openPopup();
+            });
+            document.getElementById("name-buttons").appendChild(btn);
+          });
+          var colls = collegeMatches.filter(
+            (value, index, array) => array.indexOf(value) === index
+          );
+          colls.forEach((item) => {
+            var btn = document.createElement("button");
+            btn.className = "button";
+            btn.innerHTML = item;
+            btn.addEventListener("click", function () {
+              markers[item].openPopup();
+            });
+            document.getElementById("name-buttons").appendChild(btn);
+          });
+        }
+      }
+    </script>
+  </body>
+</html>
