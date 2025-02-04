@@ -5,7 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Roslyn Class of 25</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="theme.css" />
+    <link
+      rel="stylesheet"
+      media="screen and (min-device-width: 721px)"
+      href="desktop.css"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      media="screen and (max-device-width: 720px)"
+      href="mobile.css"
+    />
+    <link
+      media="only screen and (-webkit-min-device-pixel-ratio: 2)"
+      href="mobile.css"
+      type="text/css"
+      rel="stylesheet"
+    />
   </head>
   <body>
     <button class="theme-button" id="toggle-theme">Theme</button>
@@ -37,7 +54,14 @@
           </div>
         </div>
         <div id="name-buttons" class="button-group"></div>
-          <p><mark><a href="https://docs.google.com/spreadsheets/d/1y4iTyeaZi0kXrFdXFSMkZUozOb0PSnYDZcmQNojm45g/edit?usp=sharing">Click Here for Raw Data</a></mark></p>
+        <p>
+          <mark
+            ><a
+              href="https://docs.google.com/spreadsheets/d/1y4iTyeaZi0kXrFdXFSMkZUozOb0PSnYDZcmQNojm45g/edit?usp=sharing"
+              >Click Here for Raw Data</a
+            ></mark
+          >
+        </p>
       </div>
     </div>
 
@@ -176,7 +200,7 @@
           },
           {
             name: "University of Maryland",
-            location: [38.9869224,-76.9451292],
+            location: [38.9869224, -76.9451292],
             students: ["Matthew Ho"],
           },
         ],
@@ -344,17 +368,16 @@
         California: [
           {
             name: "Lebron House",
-            location: [34.0974078,-118.4286952],
+            location: [34.0974078, -118.4286952],
             students: ["Lebron James"],
           },
           {
             name: "North Pole",
-            location: [90,-100],
+            location: [90, -100],
             students: ["Santa Claus"],
           },
         ],
       };
-
 
       var kids = [];
       var majors = [];
@@ -363,106 +386,102 @@
       var markers = {};
       //var testNames = [];
 
-      
-      fetch('https://api.sheetbest.com/sheets/e739b3a0-a3ff-487c-89e7-f548f2067e7d')
-            .then(response => response.json())
-            .then(data => {
-                let i = 0;
-                data.forEach((peice) => {
-                  if(i > 3) {
-                    kids.push(peice[1]);
-                    majors.push(peice[3]);
-                    collegeNames.push(peice[2]);
-                  }
-                  i++;
-                })
-                processData();
-              
-            })
-            .catch(error => console.error('Error fetching data:', error));
-
-      
-      function processData() {
-      
-
-      Object.values(colleges)
-        .flat()
-        .forEach((college) => {
-          const marker = L.marker(college.location, {
-            icon: L.divIcon({
-              className: "red-dot",
-              html: `<span style="opacity: .7; display: inline-block; transform: scale(${
-                .7 + college.students.length / 10
-              })">🔴</span>`,
-              iconSize: [10, 10],
-            }),
-          })
-
-            .addTo(map)
-            .bindPopup(
-              // `<b>${college.name}</b><br>${college.students.join("<br>")}`
-              `<b>${college.name}</b><br>${college.students
-                .map((student) => {
-                  const index = kids.indexOf(student);
-                  return index !== -1
-                    ? `${student} (<i>${majors[index]}</i>)`
-                    : student;
-                })
-                .join("<br>")}`
-            );
-          markers[college.name] = marker;
-        });
-
       fetch(
-        "https://raw.githubusercontent.com/PublicaMundi/MappingAPI/master/data/geojson/us-states.json"
+        "https://api.sheetbest.com/sheets/e739b3a0-a3ff-487c-89e7-f548f2067e7d"
       )
         .then((response) => response.json())
         .then((data) => {
-          L.geoJSON(data, {
-            style: {
-              color: "#555",
-              weight: 1,
-              fillOpacity: 0.1,
-            },
-            onEachFeature: function (feature, layer) {
-              layer.on("click", function () {
-                
-                let state = feature.properties.name;
-                let students = (colleges[state] || [])
-                  .map(
-                    (college) =>
-                      `<li><b>${college.name}</b> - ${college.students.join(
-                        ", "
-                      )}</li><br>`
-                  )
-                  .join("");
-                document.getElementById(
-                  "info"
-                ).innerHTML = `<h3>${state}</h3><ul>${
-                  students || "<li>No data</li>"
-                }</ul>`;
-              });
-            },
-          }).addTo(map);
-        });
+          let i = 0;
+          data.forEach((piece) => {
+            if (i > 3) {
+              kids.push(piece[1]);
+              majors.push(piece[3]);
+              collegeNames.push(piece[2]);
+            }
+            i++;
+          });
+          processData();
+        })
+        .catch((error) => console.error("Error fetching data:", error));
 
-      document
-        .getElementById("toggle-theme")
-        .addEventListener("click", function () {
-          document.body.classList.toggle("dark-mode");
+      function processData() {
+        Object.values(colleges)
+          .flat()
+          .forEach((college) => {
+            const marker = L.marker(college.location, {
+              icon: L.divIcon({
+                className: "red-dot",
+                html: `<span style="opacity: .7; display: inline-block; transform: scale(${
+                  0.7 + college.students.length / 10
+                })">🔴</span>`,
+                iconSize: [10, 10],
+              }),
+            })
 
-          // Save preference in local storage
-          if (document.body.classList.contains("dark-mode")) {
-            localStorage.setItem("theme", "dark");
-          } else {
-            localStorage.setItem("theme", "light");
-          }
-        });
-      // Load user preference
-      if (localStorage.getItem("theme") === "dark") {
-        document.body.classList.add("dark-mode");
+              .addTo(map)
+              .bindPopup(
+                // `<b>${college.name}</b><br>${college.students.join("<br>")}`
+                `<b>${college.name}</b><br>${college.students
+                  .map((student) => {
+                    const index = kids.indexOf(student);
+                    return index !== -1
+                      ? `${student} (<i>${majors[index]}</i>)`
+                      : student;
+                  })
+                  .join("<br>")}`
+              );
+            markers[college.name] = marker;
+          });
+
+        fetch(
+          "https://raw.githubusercontent.com/PublicaMundi/MappingAPI/master/data/geojson/us-states.json"
+        )
+          .then((response) => response.json())
+          .then((data) => {
+            L.geoJSON(data, {
+              style: {
+                color: "#555",
+                weight: 1,
+                fillOpacity: 0.1,
+              },
+              onEachFeature: function (feature, layer) {
+                layer.on("click", function () {
+                  let state = feature.properties.name;
+                  let students = (colleges[state] || [])
+                    .map(
+                      (college) =>
+                        `<li><b>${college.name}</b> - ${college.students.join(
+                          ", "
+                        )}</li><br>`
+                    )
+                    .join("");
+                  document.getElementById(
+                    "info"
+                  ).innerHTML = `<h3>${state}</h3><ul>${
+                    students || "<li>No data</li>"
+                  }</ul>`;
+                });
+              },
+            }).addTo(map);
+          });
+
+        document
+          .getElementById("toggle-theme")
+          .addEventListener("click", function () {
+            document.body.classList.toggle("dark-mode");
+
+            // Save preference in local storage
+            if (document.body.classList.contains("dark-mode")) {
+              localStorage.setItem("theme", "dark");
+            } else {
+              localStorage.setItem("theme", "light");
+            }
+          });
+        // Load user preference
+        if (localStorage.getItem("theme") === "dark") {
+          document.body.classList.add("dark-mode");
+        }
       }
-    }
       function searchUpdate(text) {
         const names = kids.filter((item) =>
           item.toLowerCase().includes(text.toLowerCase())

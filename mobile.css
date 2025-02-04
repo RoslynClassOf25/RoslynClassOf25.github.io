@@ -1,0 +1,33 @@
+body {
+  font-family: Arial, sans-serif;
+  font-size: 12px;
+  background-color: white;
+  color: black;
+  transition: background 0.3s, color 0.3s;
+}
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.left-column {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+#info {
+display: none;
+}
+
+#map {
+height: 400px;
+width: 100%;
+transition: filter 0.3s;
+}
+
+.right-column {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+}
