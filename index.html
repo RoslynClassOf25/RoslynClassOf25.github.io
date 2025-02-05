@@ -478,17 +478,25 @@
             })
 
               .addTo(map)
-              .bindPopup(
-                // `<b>${college.name}</b><br>${college.students.join("<br>")}`
-                `<b>${college.name}</b><br>${college.students
-                  .map((student) => {
-                    const index = kids.indexOf(student);
-                    return index !== -1
-                      ? `${student} (<i>${majors[index]}</i>)`
-                      : student;
-                  })
-                  .join("<br>")}`
-              );
+              .bindPopup(function() {
+  const collegeName = college.name;
+  const logoPath = `logos/${collegeName}.png`;
+
+  // Create the image tag, but don't display it if the image doesn't exist
+  const logoImg = `<img src="${logoPath}" alt="${collegeName} logo" style="width: 20px; height: 20px; margin-left: 10px; display: inline-block;" onerror="this.style.display='none';">`;
+
+  const studentsList = college.students
+    .map((student) => {
+      const index = kids.indexOf(student);
+      return index !== -1
+        ? `${student} (<i>${majors[index]}</i>)`
+        : student;
+    })
+    .join("<br>");
+
+  return `<b>${collegeName}</b>${logoImg}<br>${studentsList}`;
+});
+
             markers[college.name] = marker;
           });
 
