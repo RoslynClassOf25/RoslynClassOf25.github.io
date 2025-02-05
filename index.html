@@ -458,15 +458,26 @@
             const marker = L.marker(college.location, {
               icon: L.icon({
                 className: "red-dot",
-                /*
-                html: `<span style="opacity: .7; color: ${college.color}; display: inline-block; transform: scale(${
-                  1.8 + college.students.length/8
-                })">●</span>`,
-                */
                 iconUrl: "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(`
-            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30" style="filter: none;">
-                <circle cx="15" cy="15" r="${4.5 + college.students.length/2}" fill="${college.color}" stroke="${college.secondary || '#000000'}" stroke-width="2" opacity=".5"/>
-            </svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30">
+        <defs>
+            <!-- Glow effect filter -->
+            <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur stdDeviation="3.5" result="coloredBlur"/>
+                <feMerge>
+                    <feMergeNode in="coloredBlur"/>
+                    <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+            </filter>
+        </defs>
+        <!-- Circle with glow effect applied -->
+        <circle cx="15" cy="15" r="${4.5 + college.students.length/2}" 
+            fill="${college.color}" 
+            stroke="${college.secondary || '#ffffff'}" 
+            stroke-width="1.25" 
+            opacity="1" 
+            filter="url(#glow)"/>
+    </svg>
         `),
         iconSize: [30, 30],  // Adjust size for better visibility
         iconAnchor: [15, 15], // Centers the marker correctly
