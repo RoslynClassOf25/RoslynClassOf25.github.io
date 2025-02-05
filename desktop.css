@@ -1,35 +1,74 @@
 body {
-    font-family: Arial, sans-serif;
-    background-color: white;
-    color: black;
-    transition: background 0.3s, color 0.3s;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg, #1e1e2f, #3a3a5e);
+  color: #f5f5f5;
+  transition: background 0.3s, color 0.3s;
+  margin: 0;
+  padding: 0;
 }
+
 .container {
-    display: flex;
-    gap: 20px;
+  display: flex;
+  gap: 20px;
+  padding: 20px;
 }
+
 .left-column {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
 }
 
 #info {
-padding: 10px;
-border: 1px solid #ddd;
-width: 100%;
-height: 200px;
-overflow-y: auto;
+  padding: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  width: 100%;
+  height: 200px;
+  overflow-y: auto;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  color: #f5f5f5;
+  box-shadow: 0 4px 15px rgba(0, 255, 255, 0.4);
+  border-radius: 10px;
 }
 
 #map {
-height: 600px;
-width: 101.6%;
-transition: filter 0.3s;
+  height: 600px;
+  width: 101.6%;
+  transition: filter 0.3s;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 150, 255, 0.6);
 }
 
 .right-column {
-    width: 50%;
-    padding: 10px;
-    border: 1px solid #ddd;
+  width: 50%;
+  padding: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 15px rgba(255, 0, 150, 0.4);
+  color: #f5f5f5;
+  border-radius: 10px;
+}
+
+/* Additional Glow Effect for Text */
+h1, h2, h3, p {
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.8), 0 0 15px rgba(0, 150, 255, 0.5);
+}
+
+/* Button Styling for More Vibrancy */
+button {
+  background: linear-gradient(135deg, #ff00cc, #3333ff);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(255, 0, 200, 0.6);
+  transition: transform 0.2s, box-shadow 0.3s;
+}
+
+button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(255, 0, 200, 0.8);
 }
